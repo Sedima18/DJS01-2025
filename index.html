@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- =============== META =============== -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Podcast Explorer</title>
+
+  <!-- =============== FONTS =============== -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- =============== STYLES =============== -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- =============== FAVICON =============== -->
+  <link rel="icon" href="assets/images/favicon.png" type="image/png" />
+</head>
+
+<body>
+  <!-- =============== HEADER =============== -->
+  <header class="header">
+    <div class="container header-flex">
+      <div class="logo">
+        <img src="assets/images/logo.svg" alt="Podcast Explorer Logo" />
+        <h1>Podcast Explorer</h1>
+      </div>
+
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="#" class="active">Home</a></li>
+          <li><a href="#">Genres</a></li>
+          <li><a href="#">About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- =============== MAIN LAYOUT (FLEX) =============== -->
+  <main class="main-layout container">
+    <!-- Sidebar Section -->
+    <aside class="sidebar">
+      <h2>Genres</h2>
+      <ul class="genre-list" id="genre-list">
+        <!-- Genres will be dynamically added via JS -->
+      </ul>
+    </aside>
+
+    <!-- Podcast List Section -->
+    <section class="podcast-section">
+      <h2 class="section-title">All Podcasts</h2>
+      <div class="podcast-container" id="podcast-container">
+        <!-- Podcast cards dynamically injected by JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- =============== MODAL =============== -->
+  <div id="modal-backdrop" class="modal-backdrop hidden"></div>
+
+  <div id="podcast-modal" class="modal hidden">
+    <div class="modal-content">
+      <button id="modal-close" class="modal-close">&times;</button>
+      <div class="modal-header">
+        <img id="modal-image" src="" alt="Podcast cover" />
+        <h2 id="modal-title">Podcast Title</h2>
+      </div>
+      <div class="modal-body">
+        <p id="modal-description">
+          Podcast description will appear here when a user clicks a card.
+        </p>
+        <p><strong>Host:</strong> <span id="modal-host">Host name</span></p>
+        <p><strong>Episodes:</strong> <span id="modal-episodes">0</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============== FOOTER =============== -->
+  <footer class="footer">
+    <p>&copy; 2025 Podcast Explorer. All rights reserved.</p>
+  </footer>
+
+  <!-- =============== SCRIPTS =============== -->
+  <script src="js/data.js" type="module"></script>
+  <script src="js/modal.js" type="module"></script>
+  <script src="js/main.js" type="module"></script>
+</body>
+</html>
