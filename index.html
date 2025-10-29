@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Podcast App</title>
+  <title>Podcast Explorer</title>
 
-  <!-- ✅ Tailwind CSS -->
+  <!-- ✅ Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -21,9 +21,10 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
-  <!-- HEADER -->
+  <!-- ===== HEADER ===== -->
   <header class="bg-primary text-white py-4 shadow">
     <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      
       <!-- Logo -->
       <h1 class="text-2xl font-semibold flex items-center gap-2">
         🎧 <span>Podcast Explorer</span>
@@ -39,7 +40,7 @@
                class="w-full outline-none bg-transparent text-sm" />
       </div>
 
-      <!-- Right Section -->
+      <!-- Genre Filter + Profile -->
       <div class="flex items-center gap-4">
         <!-- Genre Filter -->
         <select id="genreFilter" class="text-gray-800 bg-white px-3 py-2 rounded-md text-sm shadow-sm">
@@ -58,10 +59,23 @@
     </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="container mx-auto px-4 py-8 space-y-10">   
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="container mx-auto px-4 py-8 space-y-10">
+    
+    <!-- Recently Uploaded Section -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700">🆕 Recently Uploaded</h2>
+      <div id="recentList" class="flex flex-wrap gap-6 justify-start"></div>
+    </section>
 
-  <!-- MODAL BACKDROP -->
+    <!-- All Podcasts Section -->
+    <section>
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700">🎙️ All Podcasts</h2>
+      <div id="podcastList" class="flex flex-wrap gap-6 justify-start"></div>
+    </section>
+  </main>
+
+  <!-- ===== MODAL ===== -->
   <div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div id="modalContent" class="bg-white rounded-xl shadow-lg p-6 w-11/12 max-w-md relative">
       <button id="closeModal" class="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-2xl font-bold">&times;</button>
@@ -71,7 +85,7 @@
     </div>
   </div>
 
-  <!-- MODULE SCRIPTS -->
+  <!-- ===== SCRIPTS ===== -->
   <script type="module" src="data.js"></script>
   <script type="module" src="app.js"></script>
 </body>
