@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Podcast Explorer</title>
 
-  <!-- ✅ Tailwind CSS CDN -->
+  <!-- ✅ Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -60,18 +60,18 @@
   </header>
 
   <!-- ===== MAIN CONTENT ===== -->
-  <main class="container mx-auto px-4 py-8 space-y-10">
+  <main class="container mx-auto px-4 py-8 space-y-12">
     
     <!-- Recently Uploaded Section -->
     <section>
-      <h2 class="text-2xl font-semibold mb-4 text-gray-700">🆕 Recently Uploaded</h2>
-      <div id="recentList" class="flex flex-wrap gap-6 justify-start"></div>
+      <h2 class="text-2xl font-semibold mb-6 text-gray-700">🆕 Recently Uploaded</h2>
+      <div id="recentList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
     </section>
 
     <!-- All Podcasts Section -->
     <section>
-      <h2 class="text-2xl font-semibold mb-4 text-gray-700">🎙️ All Podcasts</h2>
-      <div id="podcastList" class="flex flex-wrap gap-6 justify-start"></div>
+      <h2 class="text-2xl font-semibold mb-6 text-gray-700">🎙️ All Podcasts</h2>
+      <div id="podcastList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
     </section>
   </main>
 
