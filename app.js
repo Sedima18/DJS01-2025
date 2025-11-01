@@ -12,7 +12,7 @@ const modalDesc = document.getElementById("modalDesc");
 const seasonList = document.getElementById("seasonList");
 const closeModal = document.getElementById("closeModal");
 
-// ===== Populate Genres =====
+// ===== Populate Genre Dropdown =====
 genres.forEach((genre) => {
   const option = document.createElement("option");
   option.value = genre.id;
@@ -27,41 +27,33 @@ function renderPodcasts(list, container) {
   list.forEach((podcast) => {
     const card = document.createElement("div");
     card.className =
-      "bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300";
+      "bg-white rounded-xl shadow hover:shadow-lg transition duration-300 overflow-hidden cursor-pointer";
 
     card.innerHTML = `
       <img src="${podcast.image}" alt="${podcast.title}" class="w-full h-48 object-cover" />
-      <div class="p-4">
-        <h2 class="text-lg font-semibold mb-1">${podcast.title}</h2>
-        <p class="text-sm text-gray-600 mb-3">${podcast.description}</p>
-        <div class="flex justify-between items-center">
-          <span class="text-indigo-600 text-sm font-medium">${podcast.seasons} Seasons</span>
-          <button class="viewBtn text-sm px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
-                  data-id="${podcast.id}">
-            View
-          </button>
-        </div>
+      <div class="p-4 space-y-2">
+        <h3 class="text-lg font-semibold text-gray-800">${podcast.title}</h3>
+        <p class="text-sm text-gray-600">${podcast.description.slice(0, 80)}...</p>
+        <div class="text-sm text-indigo-600 font-medium">${podcast.seasons} Seasons</div>
+        <button class="viewBtn mt-2 w-full bg-primary text-white py-1.5 rounded-md text-sm hover:bg-indigo-700 transition" data-id="${podcast.id}">
+          View Details
+        </button>
       </div>
     `;
     container.appendChild(card);
   });
 
   if (list.length === 0) {
-    container.innerHTML = `
-      <p class="col-span-full text-center text-gray-500 text-lg mt-10">
-        No podcasts found 🎧
-      </p>`;
+    container.innerHTML = `<p class="col-span-full text-center text-gray-500">No podcasts found 🎧</p>`;
   }
 
-  // Attach modal events
+  // Attach modal event listeners
   document.querySelectorAll(".viewBtn").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      openModal(e.target.dataset.id);
-    });
+    btn.addEventListener("click", (e) => openModal(e.target.dataset.id));
   });
 }
 
-// ===== Modal Functions =====
+// ===== Modal Logic =====
 function openModal(podcastId) {
   const podcast = podcasts.find((p) => p.id === podcastId);
   const seasonData = seasons.find((s) => s.id === podcastId);
@@ -87,24 +79,26 @@ function openModal(podcastId) {
   modalBackdrop.classList.add("flex");
 }
 
-function closeModalFn() {
+closeModal.addEventListener("click", () => {
   modalBackdrop.classList.add("hidden");
   modalBackdrop.classList.remove("flex");
-}
+});
 
-closeModal.addEventListener("click", closeModalFn);
 modalBackdrop.addEventListener("click", (e) => {
-  if (e.target === modalBackdrop) closeModalFn();
+  if (e.target === modalBackdrop) {
+    modalBackdrop.classList.add("hidden");
+    modalBackdrop.classList.remove("flex");
+  }
 });
 
 // ===== Initial Render =====
 renderPodcasts(podcasts, podcastList);
 
-// Show recently uploaded (last 2)
-const recent = podcasts.slice(-2);
+// Show Recently Uploaded (last 4)
+const recent = podcasts.slice(-4);
 renderPodcasts(recent, recentList);
 
-// ===== Filter and Search =====
+// ===== Search & Filter =====
 genreFilter.addEventListener("change", applyFilters);
 searchInput.addEventListener("input", applyFilters);
 
