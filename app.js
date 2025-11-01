@@ -1,67 +1,160 @@
 import { podcasts, genres, seasons } from "./data.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const podcastGrid = document.getElementById("podcastGrid");
-  const genreFilter = document.getElementById("genreFilter");
-  const sortBy = document.getElementById("sortBy");
-  const searchInput = document.getElementById("searchInput");
-  const modal = document.getElementById("podcastModal");
-  const modalContent = document.getElementById("modalContent");
+/**
+ * @class PodcastApp
+ * @classdesc Main controller class that initializes the app, handles filtering, sorting, and modal interactions.
+ */
+class PodcastApp {
+  constructor() {
+    this.podcastGrid = document.getElementById("podcastGrid");
+    this.genreFilter = document.getElementById("genreFilter");
+    this.sortBy = document.getElementById("sortBy");
+    this.searchInput = document.getElementById("searchInput");
+    this.modal = new ModalView(document.getElementById("podcastModal"), document.getElementById("modalContent"));
 
-  // 🔹 Map genre IDs to readable titles
-  const genreMap = {};
-  genres.forEach((g) => (genreMap[g.id] = g.title));
+    // Precompute genre map for quick lookups
+    this.genreMap = this.createGenreMap(genres);
 
-  // 🔹 Populate genre filter dropdown
-  genres.forEach((genre) => {
-    const option = document.createElement("option");
-    option.value = genre.id;
-    option.textContent = genre.title;
-    genreFilter.appendChild(option);
-  });
+    // Initialize filters and render UI
+    this.populateGenreDropdown();
+    this.addEventListeners();
+    this.renderPodcasts(podcasts);
+  }
 
-  // 🔹 Render podcast cards
-  function renderPodcasts(list) {
-    podcastGrid.innerHTML = "";
+  /**
+   * Create a lookup object for genre titles.
+   * @param {Array} genres - List of genre objects.
+   * @returns {Object} Map of genre ID to title.
+   */
+  createGenreMap(genres) {
+    return genres.reduce((map, g) => {
+      map[g.id] = g.title;
+      return map;
+    }, {});
+  }
+
+  /**
+   * Populate genre filter dropdown.
+   */
+  populateGenreDropdown() {
+    genres.forEach((genre) => {
+      const option = document.createElement("option");
+      option.value = genre.id;
+      option.textContent = genre.title;
+      this.genreFilter.appendChild(option);
+    });
+  }
+
+  /**
+   * Attach event listeners for filters and search.
+   */
+  addEventListeners() {
+    [this.searchInput, this.genreFilter, this.sortBy].forEach((el) =>
+      el.addEventListener("input", () => this.applyFilters())
+    );
+  }
+
+  /**
+   * Apply search, genre, and sort filters.
+   */
+  applyFilters() {
+    const search = this.searchInput.value.toLowerCase();
+    const genre = this.genreFilter.value;
+    const sort = this.sortBy.value;
+
+    let filtered = podcasts.filter(
+      (p) =>
+        p.title.toLowerCase().includes(search) &&
+        (genre ? p.genres.includes(parseInt(genre)) : true)
+    );
+
+    filtered = this.sortPodcasts(filtered, sort);
+    this.renderPodcasts(filtered);
+  }
+
+  /**
+   * Sort podcasts by title or last updated date.
+   * @param {Array} list - Filtered podcast list.
+   * @param {string} sort - Sort criteria.
+   * @returns {Array} Sorted podcast list.
+   */
+  sortPodcasts(list, sort) {
+    if (sort === "title") {
+      return list.sort((a, b) => a.title.localeCompare(b.title));
+    }
+    return list.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+  }
+
+  /**
+   * Render all podcast cards on the landing page.
+   * @param {Array} list - List of podcasts to render.
+   */
+  renderPodcasts(list) {
+    this.podcastGrid.innerHTML = "";
+
     if (list.length === 0) {
-      podcastGrid.innerHTML = `<p class="text-center col-span-full text-gray-500">No podcasts found.</p>`;
+      this.podcastGrid.innerHTML = `<p class="text-center col-span-full text-gray-500">No podcasts found.</p>`;
       return;
     }
 
     list.forEach((p) => {
-      // Map genre IDs to names
       const genreNames = p.genres
-        ? p.genres.map((id) => genreMap[id] || "Unknown").join(", ")
+        ? p.genres.map((id) => this.genreMap[id] || "Unknown").join(", ")
         : "Uncategorized";
 
-      const card = document.createElement("div");
-      card.className =
-        "bg-white rounded-xl shadow hover:shadow-lg transition-transform transform hover:-translate-y-1 hover:scale-105 cursor-pointer p-4 flex flex-col";
-
-      card.innerHTML = `
-        <img src="${p.image}" alt="${p.title}" class="rounded-lg mb-4 w-full h-48 object-cover">
-        <h2 class="font-bold text-lg mb-1">${p.title}</h2>
-        <p class="text-sm text-gray-600 mb-1">${p.seasons} Season${p.seasons > 1 ? "s" : ""}</p>
-        <p class="text-sm text-indigo-600 mb-2">${genreNames}</p>
-        <p class="text-xs text-gray-400">Last updated: ${new Date(
-          p.updated
-        ).toLocaleDateString()}</p>
-      `;
-
-      card.addEventListener("click", () => openModal(p));
-      podcastGrid.appendChild(card);
+      const card = this.createPodcastCard(p, genreNames);
+      this.podcastGrid.appendChild(card);
     });
   }
 
-  // 🔹 Modal View
-  function openModal(podcast) {
+  /**
+   * Create a single podcast card element.
+   * @param {Object} podcast - Podcast object.
+   * @param {string} genreNames - Comma-separated list of genres.
+   * @returns {HTMLElement} Podcast card element.
+   */
+  createPodcastCard(podcast, genreNames) {
+    const card = document.createElement("div");
+    card.className =
+      "bg-white rounded-xl shadow hover:shadow-lg transition-transform transform hover:-translate-y-1 hover:scale-105 cursor-pointer p-4 flex flex-col";
+
+    card.innerHTML = `
+      <img src="${podcast.image}" alt="${podcast.title}" class="rounded-lg mb-4 w-full h-48 object-cover">
+      <h2 class="font-bold text-lg mb-1">${podcast.title}</h2>
+      <p class="text-sm text-gray-600 mb-1">${podcast.seasons} Season${podcast.seasons > 1 ? "s" : ""}</p>
+      <p class="text-sm text-indigo-600 mb-2">${genreNames}</p>
+      <p class="text-xs text-gray-400">Last updated: ${new Date(
+        podcast.updated
+      ).toLocaleDateString()}</p>
+    `;
+
+    card.addEventListener("click", () => this.modal.openModal(podcast, this.genreMap));
+    return card;
+  }
+}
+
+/**
+ * @class ModalView
+ * @classdesc Handles modal creation, rendering, and closing.
+ */
+class ModalView {
+  constructor(modalElement, modalContent) {
+    this.modalElement = modalElement;
+    this.modalContent = modalContent;
+    this.addCloseListeners();
+  }
+
+  /**
+   * Render and open modal with podcast details.
+   * @param {Object} podcast - Podcast data.
+   * @param {Object} genreMap - Map of genre IDs to names.
+   */
+  openModal(podcast, genreMap) {
     const genreNames = podcast.genres
       ? podcast.genres.map((id) => genreMap[id] || "Unknown")
       : [];
 
-    // Find season details for this podcast
     const seasonInfo = seasons.find((s) => s.id === podcast.id);
-
     const seasonList = seasonInfo
       ? seasonInfo.seasonDetails
           .map(
@@ -74,19 +167,17 @@ document.addEventListener("DOMContentLoaded", () => {
           .join("")
       : "<li class='text-gray-500 italic py-2'>No season details available.</li>";
 
-    modalContent.innerHTML = `
+    this.modalContent.innerHTML = `
       <div class="relative bg-white rounded-2xl shadow-xl p-6 max-w-5xl w-[95%] mx-auto overflow-y-auto max-h-[90vh] transform transition-all duration-300 scale-100">
         <!-- Close Button -->
         <button id="closeModalBtn" class="absolute top-3 right-3 text-gray-600 hover:text-black text-3xl font-bold focus:outline-none" aria-label="Close modal">&times;</button>
 
         <!-- Layout: Image Left, Info Right -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          <!-- Left: Cover Image -->
           <div class="flex justify-center">
             <img src="${podcast.image}" alt="${podcast.title}" class="w-full max-w-sm h-64 md:h-80 object-cover rounded-xl shadow-md">
           </div>
 
-          <!-- Right: Podcast Info -->
           <div class="flex flex-col justify-between">
             <div>
               <h2 class="text-2xl md:text-3xl font-bold text-indigo-700 mb-2">${podcast.title}</h2>
@@ -110,18 +201,22 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>
 
-        <!-- Seasons Section -->
         <div class="mt-8">
           <h3 class="font-semibold text-lg mb-3 text-gray-800 border-b pb-2">Seasons (${podcast.seasons})</h3>
-          <ul class="divide-y divide-gray-200 text-sm md:text-base">
-            ${seasonList}
-          </ul>
+          <ul class="divide-y divide-gray-200 text-sm md:text-base">${seasonList}</ul>
         </div>
       </div>
     `;
 
-    modal.classList.remove("hidden");
-    modal.classList.add(
+    this.show();
+  }
+
+  /**
+   * Show modal with background overlay.
+   */
+  show() {
+    this.modalElement.classList.remove("hidden");
+    this.modalElement.classList.add(
       "flex",
       "items-center",
       "justify-center",
@@ -131,51 +226,35 @@ document.addEventListener("DOMContentLoaded", () => {
       "z-50",
       "p-4"
     );
-
-    document
-      .getElementById("closeModalBtn")
-      .addEventListener("click", closeModalHandler);
+    document.body.style.overflow = "hidden"; // prevent background scroll
   }
 
-  // 🔹 Close Modal
-  function closeModalHandler() {
-    modal.classList.add("hidden");
-    modal.classList.remove("flex");
+  /**
+   * Hide and reset modal.
+   */
+  hide() {
+    this.modalElement.classList.add("hidden");
+    this.modalElement.classList.remove("flex");
+    document.body.style.overflow = "auto";
   }
 
-  // 🔹 Keyboard and click outside close
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeModalHandler();
-  });
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModalHandler();
-  });
-
-  // 🔹 Filtering and searching
-  function applyFilters() {
-    const search = searchInput.value.toLowerCase();
-    const genre = genreFilter.value;
-    const sort = sortBy.value;
-
-    let filtered = podcasts.filter(
-      (p) =>
-        p.title.toLowerCase().includes(search) &&
-        (genre ? p.genres.includes(parseInt(genre)) : true)
-    );
-
-    if (sort === "title") {
-      filtered.sort((a, b) => a.title.localeCompare(b.title));
-    } else {
-      filtered.sort((a, b) => new Date(b.updated) - new Date(a.updated));
-    }
-
-    renderPodcasts(filtered);
+  /**
+   * Add global event listeners for closing modal.
+   */
+  addCloseListeners() {
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") this.hide();
+    });
+    this.modalElement.addEventListener("click", (e) => {
+      if (e.target === this.modalElement) this.hide();
+    });
+    this.modalElement.addEventListener("click", (e) => {
+      if (e.target.id === "closeModalBtn") this.hide();
+    });
   }
+}
 
-  [searchInput, genreFilter, sortBy].forEach((el) =>
-    el.addEventListener("input", applyFilters)
-  );
-
-  // 🔹 Initial render
-  renderPodcasts(podcasts);
+// 🔹 Initialize the Podcast App
+document.addEventListener("DOMContentLoaded", () => {
+  new PodcastApp();
 });
