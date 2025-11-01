@@ -254,7 +254,7 @@ class ModalView {
   }
 }
 
-// 🔹 Initialize the Podcast App
+//  Initialize the Podcast App
 document.addEventListener("DOMContentLoaded", () => {
   new PodcastApp();
 });
