@@ -41,7 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
       card.innerHTML = `
         <img src="${p.image}" alt="${p.title}" class="rounded-lg mb-4 w-full h-48 object-cover">
         <h2 class="font-bold text-lg mb-1">${p.title}</h2>
-        <p class="text-sm text-gray-500 mb-2">${genreNames}</p>
+        <p class="text-sm text-gray-600 mb-1">${p.seasons} Season${p.seasons > 1 ? "s" : ""}</p>
+        <p class="text-sm text-indigo-600 mb-2">${genreNames}</p>
         <p class="text-xs text-gray-400">Last updated: ${new Date(
           p.updated
         ).toLocaleDateString()}</p>
@@ -111,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <!-- Seasons Section -->
         <div class="mt-8">
-          <h3 class="font-semibold text-lg mb-3 text-gray-800 border-b pb-2">Seasons</h3>
+          <h3 class="font-semibold text-lg mb-3 text-gray-800 border-b pb-2">Seasons (${podcast.seasons})</h3>
           <ul class="divide-y divide-gray-200 text-sm md:text-base">
             ${seasonList}
           </ul>
